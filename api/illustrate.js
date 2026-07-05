@@ -1,4 +1,5 @@
 import OpenAI from "openai";
+import { toFile } from "openai/uploads";
 
 const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
@@ -16,42 +17,40 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "画像がありません" });
     }
 
-    const response = await client.responses.create({
-      model: "gpt-4.1",
-      input: [
-        {
-          role: "user",
-          content: [
-            {
-              type: "input_text",
-              text: "この写真を、明るく親しみやすい漫画風イラストにしてください。人物の特徴、髪型、眼鏡、表情、構図はできるだけ元写真に近づけてください。"
-            },
-            {
-              type: "input_image",
-              image_url: imageBase64
-            }
-          ]
-        }
-      ],
-      tools: [
-        {
-          type: "image_generation"
-        }
-      ]
+    const match = imageBase64.match(/^data:(image\/\w+);base64,(.+)$/);
+
+    if (!match) {
+      return res.status(400).json({ error: "画像形式が正しくありません" });
+    }
+
+    const mimeType = match[1];
+    const base64Data = match[2];
+    const buffer = Buffer.from(base64Data, "base64");
+
+    const imageFile = await toFile(buffer, "photo.png", {
+      type: mimeType
     });
 
-    const imageData = response.output
-      .filter(item => item.type === "image_generation_call")
-      .map(item => item.result)[0];
+    const result = await client.images.edit({
+      model: "gpt-image-1",
+      image: imageFile,
+      prompt:
+        "この写真を、明るく親しみやすい漫画風イラストにしてください。人物の特徴、髪型、眼鏡、表情、構図はできるだけ元写真に近づけてください。",
+      size: "1024x1024"
+    });
+
+    const imageData = result.data?.[0]?.b64_json;
 
     if (!imageData) {
-      return res.status(500).json({ error: "画像生成結果がありません" });
+      return res.status(500).json({
+        error: "画像生成結果がありません",
+        detail: JSON.stringify(result)
+      });
     }
 
     return res.status(200).json({
       resultImage: `data:image/png;base64,${imageData}`
     });
-
   } catch (error) {
     return res.status(500).json({
       error: "イラスト化に失敗しました",
