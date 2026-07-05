@@ -47,7 +47,7 @@ generateButton.addEventListener("click", async function () {
       resultImage.src = data.resultImage;
       resultImage.style.display = "block";
     } else {
-      alert(data.error || "イラスト化に失敗しました。");
+        alert((data.error || "イラスト化に失敗しました。") + "\n" + (data.detail || ""));
     }
   } catch (error) {
     alert("通信エラーが発生しました。");
