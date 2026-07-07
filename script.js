@@ -2,6 +2,8 @@ const imageInput = document.getElementById("imageInput");
 const previewImage = document.getElementById("previewImage");
 const resultImage = document.getElementById("resultImage");
 const generateButton = document.getElementById("generateButton");
+const downloadBtn = document.getElementById("downloadBtn");
+
 
 let selectedImageBase64 = "";
 
@@ -46,8 +48,11 @@ generateButton.addEventListener("click", async function () {
     if (data.resultImage) {
       resultImage.src = data.resultImage;
       resultImage.style.display = "block";
+      downloadBtn.href = data.resultImage;
+downloadBtn.style.display = "inline-block";
     } else {
-        alert((data.error || "イラスト化に失敗しました。") + "\n" + (data.detail || ""));
+      downloadBtn.style.display = "none";  
+      alert((data.error || "イラスト化に失敗しました。") + "\n" + (data.detail || ""));
     }
   } catch (error) {
     alert("通信エラーが発生しました。");
