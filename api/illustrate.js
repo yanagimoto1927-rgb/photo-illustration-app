@@ -5,13 +5,36 @@ const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 });
 
+const stylePrompts = {
+  comic:
+    "明るく親しみやすい漫画風イラスト。人物の特徴、髪型、眼鏡、表情、構図は元写真に近づける。太めの輪郭線、自然な笑顔、見やすい色使い。",
+  anime:
+    "日本のアニメ風イラスト。人物の特徴、髪型、眼鏡、表情、構図を元写真に近づける。やわらかい光、きれいな線、清潔感のある雰囲気。",
+  watercolor:
+    "やさしい水彩画風イラスト。淡い色、柔らかいにじみ、温かい雰囲気。人物の特徴、髪型、眼鏡、表情、構図は元写真に近づける。",
+  oil:
+    "油絵風の肖像イラスト。筆の質感、深みのある色、立体感。人物の特徴、髪型、眼鏡、表情、構図は元写真に近づける。",
+  stamp:
+    "LINEスタンプ風のかわいいイラスト。はっきりした輪郭、明るい表情、シンプルな背景。人物の特徴、髪型、眼鏡、表情は元写真に近づける。",
+  chibi:
+    "デフォルメされたかわいいキャラクター風イラスト。頭を少し大きめ、親しみやすい表情。人物の特徴、髪型、眼鏡は元写真に近づける。",
+  pop:
+    "ポップアート風イラスト。明るい色、楽しい雰囲気、印象的な線。人物の特徴、髪型、眼鏡、表情、構図は元写真に近づける。",
+  pixel:
+    "ピクセルアート風イラスト。レトロゲーム風、ドット絵、シンプルでかわいい表現。人物の特徴、髪型、眼鏡、表情は元写真に近づける。",
+  real:
+    "リアル寄りの高品質イラスト。写真の人物特徴を保ちつつ、自然で美しいイラストにする。髪型、眼鏡、表情、構図は元写真に近づける。",
+  pencil:
+    "鉛筆画風イラスト。繊細な線、手描き感、やさしい陰影。人物の特徴、髪型、眼鏡、表情、構図は元写真に近づける。"
+};
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "POSTのみ対応しています" });
   }
 
   try {
-    const { imageBase64 } = req.body;
+    const { imageBase64, style = "comic" } = req.body;
 
     if (!imageBase64) {
       return res.status(400).json({ error: "画像がありません" });
@@ -31,11 +54,12 @@ export default async function handler(req, res) {
       type: mimeType
     });
 
+    const selectedPrompt = stylePrompts[style] || stylePrompts.comic;
+
     const result = await client.images.edit({
       model: "gpt-image-1",
       image: imageFile,
-      prompt:
-        "この写真を、明るく親しみやすい漫画風イラストにしてください。人物の特徴、髪型、眼鏡、表情、構図はできるだけ元写真に近づけてください。",
+      prompt: selectedPrompt,
       size: "1024x1024"
     });
 

@@ -1,86 +1,215 @@
-body{
-    margin:0;
-    font-family:Arial, sans-serif;
-    background:#f5f5f5;
+* {
+  box-sizing: border-box;
 }
 
-.container{
-    width:90%;
-    max-width:700px;
-    margin:40px auto;
-    background:white;
-    padding:30px;
-    border-radius:15px;
-    text-align:center;
-    box-shadow:0 0 15px rgba(0,0,0,.15);
+body {
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+  background: linear-gradient(135deg, #eef4ff, #fff7f0);
+  color: #222;
 }
 
-h1{
-    color:#333;
+.app {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 40px 20px;
 }
 
-.preview,
-.result{
-    width:100%;
-    height:350px;
-    border:2px dashed #bbb;
-    border-radius:10px;
-    margin:20px auto;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    overflow:hidden;
-    background:#fafafa;
+.hero {
+  text-align: center;
+  margin-bottom: 30px;
 }
 
-.preview img,
-.result img{
-    max-width:100%;
-    max-height:100%;
+.badge {
+  display: inline-block;
+  padding: 8px 16px;
+  background: #ffffff;
+  border-radius: 999px;
+  font-weight: bold;
+  color: #2196f3;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
 }
 
-button{
-    padding:15px 35px;
-    font-size:18px;
-    background:#2196F3;
-    color:white;
-    border:none;
-    border-radius:8px;
-    cursor:pointer;
+.hero h1 {
+  font-size: 48px;
+  line-height: 1.2;
+  margin: 20px 0;
 }
 
-button:hover{
-    background:#1976D2;
+.lead {
+  font-size: 18px;
+  color: #666;
 }
 
-input{
-    margin-top:20px;
-}
-.download-btn{
-    display:inline-block;
-    margin-top:20px;
-    padding:12px 24px;
-    background:#28a745;
-    color:white;
-    text-decoration:none;
-    border-radius:8px;
-    font-weight:bold;
+.card {
+  background: rgba(255,255,255,0.9);
+  border-radius: 24px;
+  padding: 30px;
+  margin-bottom: 28px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.08);
 }
 
-.download-btn:hover{
-    background:#218838;
-}
-.download-btn{
-    display:inline-block;
-    margin-top:20px;
-    padding:12px 24px;
-    background:#2196f3;
-    color:#fff;
-    text-decoration:none;
-    border-radius:8px;
-    font-size:18px;
+.card h2 {
+  margin-top: 0;
 }
 
-.download-btn:hover{
-    background:#1976d2;
+.upload-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed #90caf9;
+  border-radius: 20px;
+  padding: 40px;
+  cursor: pointer;
+  background: #f8fbff;
+  transition: 0.2s;
+}
+
+.upload-box:hover {
+  background: #eef7ff;
+  transform: translateY(-2px);
+}
+
+.upload-box input {
+  display: none;
+}
+
+.upload-icon {
+  font-size: 44px;
+  margin-bottom: 12px;
+}
+
+.preview-area {
+  margin-top: 24px;
+  text-align: center;
+}
+
+.preview-area img {
+  max-width: 320px;
+  width: 100%;
+  border-radius: 18px;
+  display: none;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+}
+
+.style-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.style-btn {
+  border: none;
+  padding: 14px 10px;
+  border-radius: 14px;
+  background: #f1f3f6;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.2s;
+}
+
+.style-btn:hover {
+  background: #e3f2fd;
+}
+
+.style-btn.active {
+  background: #2196f3;
+  color: #fff;
+}
+
+.main-btn {
+  display: block;
+  width: 100%;
+  padding: 18px;
+  border: none;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #2196f3, #7c4dff);
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.main-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.loading {
+  text-align: center;
+  padding: 30px;
+}
+
+.hidden {
+  display: none;
+}
+
+.spinner {
+  width: 44px;
+  height: 44px;
+  border: 5px solid #e3f2fd;
+  border-top: 5px solid #2196f3;
+  border-radius: 50%;
+  margin: 0 auto 16px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.result-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.result-item {
+  background: #fff;
+  border-radius: 18px;
+  padding: 16px;
+  text-align: center;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+}
+
+.result-item img {
+  width: 100%;
+  border-radius: 14px;
+  margin-bottom: 12px;
+}
+
+.download-btn {
+  display: inline-block;
+  padding: 12px 20px;
+  background: #16a34a;
+  color: white;
+  text-decoration: none;
+  border-radius: 12px;
+  font-weight: bold;
+}
+
+.download-btn:hover {
+  background: #15803d;
+}
+
+@media (max-width: 768px) {
+  .hero h1 {
+    font-size: 34px;
+  }
+
+  .style-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .result-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .card {
+    padding: 22px;
+  }
 }

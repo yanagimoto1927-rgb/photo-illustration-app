@@ -1,66 +1,70 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>写真イラスト化アプリ</title>
-
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>写真イラスト化アプリ V2</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
+  <main class="app">
 
-<div class="container">
+    <section class="hero">
+      <p class="badge">AI Illustration Studio</p>
+      <h1>写真を10種類の<br>イラストに変換</h1>
+      <p class="lead">
+        写真をアップロードするだけで、漫画風・水彩画・アニメ風などのイラストを作成できます。
+      </p>
+    </section>
 
-<h1>🎨 写真イラスト化アプリ</h1>
+    <section class="card upload-card">
+      <h2>1. 写真を選択</h2>
 
-<input
-type="file"
-id="imageInput"
-accept="image/*"
->
+      <label class="upload-box" for="imageInput">
+        <input type="file" id="imageInput" accept="image/*">
+        <span class="upload-icon">📷</span>
+        <strong>写真を選択またはクリック</strong>
+        <small>JPG / PNG 対応</small>
+      </label>
 
-<div class="preview">
+      <div class="preview-area">
+        <img id="previewImage" alt="選択した写真のプレビュー">
+      </div>
+    </section>
 
-<img
-id="previewImage"
-src=""
-style="display:none;"
->
+    <section class="card style-card">
+      <h2>2. イラストの種類を選択</h2>
 
-</div>
+      <div class="style-grid">
+        <button class="style-btn active" data-style="comic">漫画風</button>
+        <button class="style-btn" data-style="anime">アニメ風</button>
+        <button class="style-btn" data-style="watercolor">水彩画</button>
+        <button class="style-btn" data-style="oil">油絵風</button>
+        <button class="style-btn" data-style="stamp">LINEスタンプ風</button>
+        <button class="style-btn" data-style="chibi">デフォルメ</button>
+        <button class="style-btn" data-style="pop">ポップアート</button>
+        <button class="style-btn" data-style="pixel">ピクセルアート</button>
+        <button class="style-btn" data-style="real">リアルイラスト</button>
+        <button class="style-btn" data-style="pencil">鉛筆画</button>
+      </div>
 
-<button id="generateButton">
+      <button id="generateButton" class="main-btn">選んだスタイルで生成</button>
+    </section>
 
-イラスト化
+    <section class="card result-card">
+      <h2>3. 結果</h2>
 
-</button>
+      <div id="loading" class="loading hidden">
+        <div class="spinner"></div>
+        <p>イラストを生成中です...</p>
+      </div>
 
-<h2>結果</h2>
+      <div id="resultGrid" class="result-grid"></div>
+    </section>
 
-<div class="result">
+  </main>
 
-<img
-id="resultImage"
-src=""
-style="display:none;"
->
-
-</div>
-<a
-  id="downloadBtn"
-  href="#"
-  download="illustration.png"
-  style="display:none;"
-  class="download-btn"
->
-📥 イラストをダウンロード
-</a>
-
-</div>
-
-<script src="script.js"></script>
-
+  <script src="script.js"></script>
 </body>
 </html>
