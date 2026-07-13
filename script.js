@@ -1,63 +1,17 @@
-const imageInput = document.getElementById("imageInput");
-const previewImage = document.getElementById("previewImage");
-const resultImage = document.getElementById("resultImage");
-const generateButton = document.getElementById("generateButton");
-const downloadBtn = document.getElementById("downloadBtn");
-
-
-let selectedImageBase64 = "";
-
-imageInput.addEventListener("change", function () {
-  const file = this.files[0];
-
-  if (!file) return;
-
-  const reader = new FileReader();
-
-  reader.onload = function (e) {
-    selectedImageBase64 = e.target.result;
-    previewImage.src = selectedImageBase64;
-    previewImage.style.display = "block";
-  };
-
-  reader.readAsDataURL(file);
-});
-
-generateButton.addEventListener("click", async function () {
-  if (!selectedImageBase64) {
-    alert("先に写真を選択してください。");
-    return;
-  }
-
-  generateButton.textContent = "イラスト化中...";
-  generateButton.disabled = true;
-
-  try {
-    const response = await fetch("/api/illustrate", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        imageBase64: selectedImageBase64
-      })
-    });
-
-    const data = await response.json();
-
-    if (data.resultImage) {
-      resultImage.src = data.resultImage;
-      resultImage.style.display = "block";
-      downloadBtn.href = data.resultImage;
-downloadBtn.style.display = "inline-block";
-    } else {
-      downloadBtn.style.display = "none";  
-      alert((data.error || "イラスト化に失敗しました。") + "\n" + (data.detail || ""));
-    }
-  } catch (error) {
-    alert("通信エラーが発生しました。");
-  }
-
-  generateButton.textContent = "イラスト化";
-  generateButton.disabled = false;
-});
+const STYLES=[["comic","現代漫画"],["anime","日本アニメ"],["ghibli","手描き長編アニメ"],["disney","ファンタジーアニメ"],["kingdom","歴史戦記・カラー鎧"],["onepiece","海洋冒険漫画"],["dragonball","王道バトル漫画"],["hokuto","重厚な劇画"],["cyberpunk","サイバーパンク"],["ukiyoe","浮世絵"],["ukiyoeColor","カラー浮世絵"],["inkwash","水墨画"],["watercolor","水彩画"],["oil","油絵"],["pencil","鉛筆画"],["real","リアルイラスト"],["pop","ポップアート"],["fantasy","ファンタジー"],["retro","昭和レトロ漫画"],["stamp","スタンプ"]];
+const $=s=>document.querySelector(s),els={input:$("#imageInput"),drop:$("#dropZone"),empty:$("#emptyPreview"),preview:$("#previewImage"),styles:$("#styleGrid"),all:$("#selectAllButton"),clear:$("#clearAllButton"),gen:$("#generateButton"),prog:$("#progressSection"),pt:$("#progressTitle"),pc:$("#progressCount"),pb:$("#progressBar"),pm:$("#progressMessage"),cancel:$("#cancelButton"),res:$("#resultSection"),orig:$("#originalResultImage"),grid:$("#resultGrid"),zip:$("#downloadZipButton")};
+let file=null,source="",cancelled=false,results=[];
+els.styles.innerHTML=STYLES.map(([id,n],i)=>`<label><input type="checkbox" name="style" value="${id}" ${i<3?"checked":""}><span>${n}</span></label>`).join("");
+const selected=()=>[...document.querySelectorAll('input[name="style"]:checked')].map(x=>x.value);
+const label=id=>STYLES.find(x=>x[0]===id)?.[1]||id;
+const update=()=>els.gen.disabled=!file||!selected().length;
+function resize(f){return new Promise((ok,no)=>{const im=new Image(),u=URL.createObjectURL(f);im.onload=()=>{const s=Math.min(1,1600/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*s);c.height=Math.round(im.height*s);c.getContext("2d").drawImage(im,0,0,c.width,c.height);ok(c.toDataURL(f.type==="image/png"?"image/png":"image/jpeg",.9));URL.revokeObjectURL(u)};im.onerror=no;im.src=u})}
+async function handle(f){if(!f)return;if(!["image/jpeg","image/png","image/webp"].includes(f.type))return alert("JPEG・PNG・WebPを選択してください。");if(f.size>10*1024*1024)return alert("10MB以下の画像を選択してください。");file=f;source=await resize(f);els.preview.src=source;els.preview.classList.remove("hidden");els.empty.classList.add("hidden");update()}
+function progress(d,t,m){els.pc.textContent=`${d} / ${t}`;els.pb.style.width=`${t?d/t*100:0}%`;els.pm.textContent=m}
+async function call(style,q){const r=await fetch("/api/illustrate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({imageBase64:source,style,quality:q})});const d=await r.json().catch(()=>({}));if(!r.ok||!d.resultImage)throw new Error(d.detail||d.error||`HTTP ${r.status}`);return d.resultImage}
+function card(style,img){const a=document.createElement("article");a.className="card";a.innerHTML=`<img src="${img}"><div class="card-body"><h3>${label(style)}</h3><div class="actions"><button class="save">保存</button><button class="again">再生成</button></div></div>`;a.querySelector(".save").onclick=()=>download(img,`${label(style)}.png`);a.querySelector(".again").onclick=async e=>{const b=e.currentTarget;b.disabled=true;b.textContent="生成中…";try{const n=await call(style,document.querySelector('input[name="quality"]:checked').value);a.querySelector("img").src=n;const x=results.find(x=>x.style===style);if(x)x.image=n}catch(err){alert(err.message)}b.disabled=false;b.textContent="再生成"};els.grid.appendChild(a)}
+function errorCard(n,m){const a=document.createElement("div");a.className="error";a.innerHTML=`<b>${n}</b><p>${String(m).replace(/[<>]/g,"")}</p>`;els.grid.appendChild(a)}
+async function generate(){const ss=selected(),q=document.querySelector('input[name="quality"]:checked').value;cancelled=false;results=[];els.grid.innerHTML="";els.res.classList.add("hidden");els.prog.classList.remove("hidden");els.gen.disabled=true;els.orig.src=source;for(let i=0;i<ss.length;i++){if(cancelled)break;const s=ss[i];progress(i,ss.length,`${label(s)}を生成しています…`);try{const img=await call(s,q);results.push({style:s,image:img});card(s,img)}catch(e){errorCard(label(s),e.message)}progress(i+1,ss.length,`${i+1}件完了`)}els.res.classList.remove("hidden");els.gen.disabled=false;els.pt.textContent=cancelled?"生成を中止しました":"生成が完了しました";els.res.scrollIntoView({behavior:"smooth"})}
+function download(data,name){const a=document.createElement("a");a.href=data;a.download=name;a.click()}
+els.zip.onclick=async()=>{if(!results.length)return alert("保存できる画像がありません。");const z=new JSZip();results.forEach((x,i)=>z.file(`${String(i+1).padStart(2,"0")}_${label(x.style)}.png`,x.image.split(",")[1],{base64:true}));const b=await z.generateAsync({type:"blob"}),u=URL.createObjectURL(b),a=document.createElement("a");a.href=u;a.download="photo-illustration-v09.zip";a.click();URL.revokeObjectURL(u)};
+els.input.onchange=e=>handle(e.target.files[0]);els.styles.onchange=update;els.all.onclick=()=>{document.querySelectorAll('input[name="style"]').forEach(x=>x.checked=true);update()};els.clear.onclick=()=>{document.querySelectorAll('input[name="style"]').forEach(x=>x.checked=false);update()};els.gen.onclick=generate;els.cancel.onclick=()=>cancelled=true;["dragenter","dragover"].forEach(t=>els.drop.addEventListener(t,e=>{e.preventDefault();els.drop.classList.add("dragover")}));["dragleave","drop"].forEach(t=>els.drop.addEventListener(t,e=>{e.preventDefault();els.drop.classList.remove("dragover")}));els.drop.addEventListener("drop",e=>handle(e.dataTransfer.files[0]));update();

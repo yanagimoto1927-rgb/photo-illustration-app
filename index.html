@@ -1,66 +1,19 @@
 <!DOCTYPE html>
-<html lang="ja">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>写真イラスト化アプリ</title>
-
-<link rel="stylesheet" href="style.css">
-</head>
-
-<body>
-
-<div class="container">
-
-<h1>🎨 写真イラスト化アプリ</h1>
-
-<input
-type="file"
-id="imageInput"
-accept="image/*"
->
-
-<div class="preview">
-
-<img
-id="previewImage"
-src=""
-style="display:none;"
->
-
-</div>
-
-<button id="generateButton">
-
-イラスト化
-
-</button>
-
-<h2>結果</h2>
-
-<div class="result">
-
-<img
-id="resultImage"
-src=""
-style="display:none;"
->
-
-</div>
-<a
-  id="downloadBtn"
-  href="#"
-  download="illustration.png"
-  style="display:none;"
-  class="download-btn"
->
-📥 イラストをダウンロード
-</a>
-
-</div>
-
-<script src="script.js"></script>
-
-</body>
-</html>
+<html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>写真イラスト化アプリ V9</title><link rel="stylesheet" href="style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" defer></script><script src="script.js" defer></script></head>
+<body><main class="app"><section class="hero"><p class="badge">AI Illustration Studio V9</p>
+<h1>写真1枚から<br>高品質イラストを一括生成</h1><p>元写真の人物・人数・顔立ち・構図をできるだけ維持します。</p></section>
+<section class="panel"><h2>1. 写真を選択</h2><label id="dropZone" class="drop" for="imageInput"><input id="imageInput" type="file" accept="image/png,image/jpeg,image/webp">
+<div id="emptyPreview"><b>クリックまたはドラッグ＆ドロップ</b><small>JPEG・PNG・WebP／10MB以下</small></div>
+<img id="previewImage" class="hidden" alt="元写真"></label>
+<h2>2. 画像品質</h2><div class="quality"><label><input type="radio" name="quality" value="medium" checked>通常画質</label>
+<label><input type="radio" name="quality" value="high">商用画質</label></div>
+<div class="style-head"><h2>3. スタイル</h2><div><button id="selectAllButton">すべて選択</button><button id="clearAllButton">すべて解除</button></div></div>
+<div id="styleGrid" class="styles"></div><p class="note">選択数だけAPI料金が発生します。最初は1〜3種類でテストしてください。</p>
+<button id="generateButton" class="primary" disabled>イラストを生成する</button></section>
+<section id="progressSection" class="panel hidden"><h2 id="progressTitle">生成中</h2><div class="row"><span id="progressMessage"></span><b id="progressCount">0 / 0</b></div>
+<div class="track"><div id="progressBar"></div></div><button id="cancelButton">残りを中止</button></section>
+<section id="resultSection" class="panel hidden"><div class="style-head"><h2>生成結果</h2><button id="downloadZipButton">ZIPで保存</button></div>
+<div class="original"><p>元写真</p><img id="originalResultImage"></div><div id="resultGrid" class="results"></div></section>
+</main></body></html>
